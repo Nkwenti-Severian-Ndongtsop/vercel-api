@@ -6,21 +6,15 @@
       "maxDuration": 10
     }
   },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(\\d+)",
-      "dest": "/api/fibonacci.rs",
-      "methods": ["GET"]
-    },
-    {
-      "src": "/",
-      "dest": "/api/fibonacci.rs",
-      "methods": ["GET"]
+      "source": "/api/fib/:number",
+      "destination": "/api/fibonacci.rs"
     }
   ],
   "headers": [
     {
-      "source": "/api/(.*)",
+      "source": "/api/fib/(.*)",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
