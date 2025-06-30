@@ -1,43 +1,26 @@
 use serde_json::json;
-use vercel_runtime::{run, Body, Error, Request, Response, StatusCode};
+use vercel_runtime::{Body, Error, Request, Response, StatusCode};
 use num_bigint::BigUint;
 
 #[tokio::main]
-async fn main() -> Result<(), Error> {
-    run(handler).await
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    vercel_runtime::run(handler).await?;
+    Ok(())
 }
 
 pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
-    // Parse the request path to get the Fibonacci number
     let path = req.uri().path();
-    let query = req.uri().query().unwrap_or("");
     
-    println!("Full URI: {}", req.uri());
-    println!("Path: {}", path);
-    println!("Query: {}", query);
-    
-    // Try multiple ways to extract the number
     let n: u64 = extract_fibonacci_number(path);
     
-    println!("Extracted number: {}", n);
-    
-    // Limit to prevent excessive computation
     let n = n.min(1000);
     
     let fibonacci_result = calculate_fibonacci(n);
     
     let response_body = json!({
-        "fibonacci": fibonacci_result.to_string(),
         "n": n,
-        "timestamp": chrono::Utc::now().to_rfc3339(),
-        "status": "success",
-        "debug": {
-            "path": path,
-            "query": query,
-            "full_uri": req.uri().to_string(),
-            "extraction_method": "path_analysis"
-        },
-        "usage": "To calculate Fibonacci of a different number, use: /api/20 (replace 20 with your desired number(integer))"
+        "fibonacci": fibonacci_result.to_string(),
+        "timestamp": chrono::Utc::now().to_rfc3339()
     });
 
     Ok(Response::builder()
@@ -50,16 +33,14 @@ pub async fn handler(req: Request) -> Result<Response<Body>, Error> {
 }
 
 fn extract_fibonacci_number(path: &str) -> u64 {
-    
-    if let Some(last_part) = path.split('/').last() {
-        if let Ok(num) = last_part.parse::<u64>() {
-            println!("Found number at end of path: {}", num);
+    let parts: Vec<&str> = path.trim_matches('/').split('/').collect();
+    if parts.len() >= 3 && parts[0] == "api" && parts[1] == "fib" {
+        if let Ok(num) = parts[2].parse::<u64>() {
+            println!("Found number in /api/fib/:number: {}", num);
             return num;
         }
     }
-    
-    println!("No number found, using default: 10");
-    10 // Default fallback
+    0
 }
 
 fn calculate_fibonacci(n: u64) -> BigUint {
