@@ -1,28 +1,20 @@
 [package]
-name = "my-vercel-api"
-version = "0.1.0"
+name = "fibonacci-rust-api"
+version = "1.0.0"
 edition = "2021"
+authors = ["Your Name tissongguyghislain001@gmail.com"]
+description = "High-performance Fibonacci API built with Rust and deployed on Vercel"
+license = "MIT"
+keywords = ["fibonacci", "serverless", "vercel", "rust", "api"]
 
 [dependencies]
-tokio = { version = "1", features = ["macros"] }
+tokio = { version = "1.45", features = ["macros"] }
 serde_json = { version = "1", features = ["raw_value"] }
-# Documentation: https://docs.rs/vercel_runtime/latest/vercel_runtime
-vercel_runtime = { version = "1" }
+vercel_runtime = "1.1"
+num-bigint = "0.4"
+num-traits = "0.2"
+chrono = { version = "0.4.41", features = ["serde"] }
 
-# You can specify a library for shared logic here (optional)
-# [lib]
-# path = "src-rs/lib.rs"
-
-# Each handler has to be specified as [[bin]]
 [[bin]]
-name = "handler"
-path = "api/handler.rs"
-
-# Note that you need to provide unique names for each binary:
-# [[bin]]
-# name = "user-id"
-# path = "api/user/[id].rs"
-#
-# [[bin]]
-# name = "group-id"
-# path = "api/group/[id].rs"
+name = "fibonacci"
+path = "api/fibonacci.rs"

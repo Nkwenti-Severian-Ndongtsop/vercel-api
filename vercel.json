@@ -1,7 +1,40 @@
 {
   "functions": {
-    "api/**/*.rs": {
-      "runtime": "vercel-rust@4.0.9"
+    "api/fibonacci.rs": {
+      "runtime": "vercel-rust@4.0.9",
+      "memory": 1024,
+      "maxDuration": 10
     }
-  }
+  },
+  "routes": [
+    {
+      "src": "/(\\d+)",
+      "dest": "/api/fibonacci.rs",
+      "methods": ["GET"]
+    },
+    {
+      "src": "/",
+      "dest": "/api/fibonacci.rs",
+      "methods": ["GET"]
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type"
+        }
+      ]
+    }
+  ]
 }
